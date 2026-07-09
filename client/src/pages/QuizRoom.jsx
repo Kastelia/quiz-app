@@ -23,7 +23,6 @@ const QuizRoom = () => {
   const timerRef = useRef(null);
   const hasJoinedRef = useRef(false);
 
-  // Проверка, является ли пользователь организатором
   const isOrganizer = user?.role === 'organizer';
 
   useEffect(() => {
@@ -111,11 +110,26 @@ const QuizRoom = () => {
     };
   }, [roomCode, user, navigate, isConnected, getSocket]);
 
-  const handleTimeout = () => {
-    if (!isAnswered) {
-      handleSubmitAnswer([]);
-    }
-  };
+const handleTimeout = () => {
+  if (isAnswered) return;
+
+  setIsAnswered(true);
+
+  const currentSocket = getSocket();
+  if (currentSocket && quiz) {
+    currentSocket.emit('submit-answer', {
+      quizId: quiz.quizId,
+      questionIndex: questionIndex,
+      selectedOptions: [],
+    });
+  }
+
+  if (isOrganizer) {
+    setTimeout(() => {
+      handleNextQuestion();
+    }, 1500);
+  }
+};
 
   const handleOptionSelect = (optionIndex) => {
     if (isAnswered || isFinished) return;
@@ -136,6 +150,11 @@ const QuizRoom = () => {
   const handleSubmitAnswer = (options = null) => {
     if (isAnswered) return;
 
+  if (timeLeft <= 0) {
+    alert('⏰ Время вышло! Ответ не принимается.');
+    return;
+  }
+
     const currentSocket = getSocket();
     if (!currentSocket) return;
 
@@ -151,7 +170,6 @@ const QuizRoom = () => {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  // ✅ Функция для переключения на следующий вопрос (только организатор)
   const handleNextQuestion = () => {
     const currentSocket = getSocket();
     if (!currentSocket) return;
@@ -162,7 +180,6 @@ const QuizRoom = () => {
   };
 
 const getOptionClass = (index) => {
-  // ✅ Если ответ уже отправлен - показываем правильные/неправильные
   if (isAnswered) {
     const isSelected = selectedOptions.includes(index);
     const question = currentQuestion;
@@ -174,7 +191,6 @@ const getOptionClass = (index) => {
     return `${styles.option} ${styles.disabled}`;
   }
 
-  // ✅ ДО ОТВЕТА - подсвечиваем выбранный вариант
   const isSelected = selectedOptions.includes(index);
   if (isSelected) {
     return `${styles.option} ${styles.selected}`;

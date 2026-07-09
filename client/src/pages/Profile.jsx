@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import styles from './Profile.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const { user } = useAuth();
   const [myQuizzes, setMyQuizzes] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -33,18 +35,19 @@ const Profile = () => {
     }
   };
 
-  const handleStartQuiz = async (quizId) => {
-    try {
-      const response = await api.post(`/quiz/start/${quizId}`);
-      alert(`✅ Квиз запущен! Код комнаты: ${response.data.roomCode}`);
+const handleStartQuiz = async (quizId) => {
+  try {
+    const response = await api.post(`/quiz/start/${quizId}`);
+    const roomCode = response.data.roomCode;
 
-      window.location.href = `/quiz/${response.data.roomCode}`;
+    alert(`✅ Квиз запущен! Код комнаты: ${roomCode}`);
 
-      fetchData();
-    } catch (error) {
-      alert('❌ Ошибка при запуске квиза: ' + (error.response?.data?.error || error.message));
-    }
-  };
+    navigate(`/quiz/${roomCode}`);
+    fetchData();
+  } catch (error) {
+    alert('❌ Ошибка при запуске квиза: ' + (error.response?.data?.error || error.message));
+  }
+};
 
   if (!user) {
     return <div className={styles.loading}>Загрузка...</div>;

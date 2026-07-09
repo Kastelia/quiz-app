@@ -74,7 +74,7 @@ const Home = () => {
           <div className={`card ${styles.featureCard}`}>
             <div className={styles.featureIcon}>🏅</div>
             <h3>Система баллов</h3>
-            <p>Автоматический подсчет очков и определение победителей</p>
+            <p>Автоматический подсчет очков и&nbsp;определение победителей</p>
           </div>
         </div>
       </section>
