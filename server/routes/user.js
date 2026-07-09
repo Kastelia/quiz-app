@@ -128,7 +128,7 @@ router.get('/history', auth, async (req, res) => {
       score: h.score || 0,
       rank: (h.rank || 0) + 1,
       totalParticipants: h.totalParticipants || 0,
-      finishedAt: h.finishedAt,
+      finishedAt: h.finishedAt || new Date().toISOString(),
     })));
   } catch (error) {
     console.error('❌ Get history error:', error);

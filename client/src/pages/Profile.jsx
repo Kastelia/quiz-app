@@ -148,7 +148,7 @@ const handleStartQuiz = async (quizId) => {
                     <span>⭐ Очки: {item.score || 0}</span>
                   </div>
                   <p className={styles.quizItemMeta}>
-                    {item.finishedAt ? new Date(item.finishedAt).toLocaleDateString() : 'Дата неизвестна'}
+                    {item.finishedAt ? new Date(item.finishedAt).toLocaleDateString('ru-RU') : 'Дата неизвестна'}
                   </p>
                 </div>
               ))}

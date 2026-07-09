@@ -277,6 +277,12 @@ socket.on('join-quiz', async ({ roomCode, userId, username }) => {
           `);
           finishQuiz.run(quizId);
 
+          const updateParticipants = db.prepare(`UPDATE participants
+          SET status = 'finished', finishedAt = datetime('now')
+          WHERE quizId = ?
+          `);
+          updateParticipants.run(quizId);
+
           const getAllParticipantsForStats = db.prepare(`
             SELECT p.userId, p.score,
               (SELECT MAX(score) FROM participants WHERE quizId = ?) as maxScore
